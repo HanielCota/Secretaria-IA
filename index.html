@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code</title>
+    <script src="https://kit.fontawesome.com/ef31ccd9e2.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            background: #1a1a1a;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 100px;
+            color: #fff;
+        }
+
+        .mid {
+            display: flex;
+            justify-content: space-around;
+            flex-direction: row;
+            align-items: center;
+            background: #ffffff;
+            margin: 0 auto;
+            margin-top: 150px;
+            width: 80%;
+            padding: 150px 0;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 300px;
+            height: 300px;
+            border: 2px solid;
+        }
+
+
+        .guide ul {
+            list-style: none;
+        }
+
+        .guide ul li {
+            margin: 10px 0;
+            font-size: 22px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mid">
+        <div class="guide">
+            <ul>
+                <li>1. Abra o WhatsApp no seu celular.</li>
+                <li>2. Toque em <span>Mais opções</span> ou em <span>Configurações </span>no iPhone.</li>
+                <li>3. Toque em <span>Dispositivos conectados</span> e, em seguida, em <span>Conectar
+                        Dispositivo.</span></li>
+                <li>4. Aponte seu celular para esta tela e escanei o QR code.</li>
+            </ul>
+        </div>
+        <div id="qrcode">
+        </div>
+    </div>
+
+    <script>
+        function fetchQRCode() {
+            fetch('/qrcode')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.qrCodeData) {
+                        displayQRCode(data.qrCodeData); // Exibe o QR code
+                    } else {
+                        setTimeout(fetchQRCode, 1000); // Tenta novamente após 1 segundo
+                    }
+                })
+                .catch(error => console.error('Error fetching QR code:', error));
+        }
+
+        function displayQRCode(qrCodeData) {
+            const qrCodeImg = new Image();
+            qrCodeImg.src = qrCodeData;
+            qrCodeImg.alt = "QR Code";
+            qrCodeImg.onload = () => {
+                const qrcodeDiv = document.getElementById('qrcode');
+                qrcodeDiv.innerHTML = ''; // Limpa o conteúdo anterior
+                qrcodeDiv.appendChild(qrCodeImg); // Adiciona o novo QR code
+                setTimeout(fetchQRCode, 1000); // Verifica periodicamente se há um novo QR code
+            };
+        }
+
+        fetchQRCode(); // Inicia a busca pelo QR code quando a página é carregada
+    </script>
+</body>
+
+</html>
